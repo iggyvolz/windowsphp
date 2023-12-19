@@ -1,0 +1,15 @@
+{
+  "require": {
+    "php": "^8.3",
+    "ext-ffi": "*",
+    "revolt/event-loop": "^1.0"
+  },
+  "require-dev": {
+    "nette/php-generator": "^4.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "iggyvolz\\windows\\": "src/"
+    }
+  }
+}
