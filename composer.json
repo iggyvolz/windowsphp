@@ -1,4 +1,6 @@
 {
+  "name": "iggyvolz/windowsphp",
+  "license": "0BSD",
   "require": {
     "php": "^8.3",
     "ext-ffi": "*",
