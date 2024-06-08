@@ -122,7 +122,6 @@ class Window
     public function handleEvent(int $uMsg, int $wParam, int $lParam): int
     {
         $eventClass = Event::EVENTS[$uMsg] ?? Event::class;
-        echo "$eventClass $uMsg $wParam $lParam\n";
         $event = new $eventClass($this, $uMsg, $wParam, $lParam);
         foreach ($this->handlers[$uMsg] ?? [] as $handler) {
             if (!is_null($result = $handler($event))) {
@@ -153,5 +152,36 @@ class Window
                 $this->handleMessages();
             }
         });
+    }
+
+    public function update(): void
+    {
+        WindowsFfi::get()->user32->UpdateWindow($this->hwnd);
+    }
+
+    public function invalidate(bool $erase = true): void
+    {
+        WindowsFfi::get()->user32->InvalidateRect($this->hwnd, null, $erase);
+    }
+
+    public function beginPaint(): PaintStruct
+    {
+        $paintStruct = PaintStruct::create(WindowsFfi::get()->user32);
+        WindowsFfi::get()->user32->BeginPaint($this->hwnd, $paintStruct->addr());
+        return $paintStruct;
+    }
+    public function endPaint(PaintStruct $paintStruct): void
+    {
+        WindowsFfi::get()->user32->EndPaint($this->hwnd, $paintStruct->addr());
+    }
+
+    /**
+     * @param Closure(PaintStruct $ps):void $closure
+     * @return void
+     */
+    public function paint(Closure $closure): void
+    {
+        $closure($ps = $this->beginPaint());
+        $this->endPaint($ps);
     }
 }

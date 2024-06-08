@@ -10,6 +10,7 @@ final class WindowsFfi
 {
     public readonly FFI $user32;
     public readonly FFI $shell32;
+    public readonly FFI $kernel32;
 
     private function __construct()
     {
@@ -20,6 +21,7 @@ final class WindowsFfi
         typedef void *PVOID;
         typedef LONG_PTR HANDLE;
         typedef HANDLE HWND;
+        typedef HANDLE HDC;
         typedef uint64_t UINT_PTR;
         typedef UINT_PTR WPARAM;
         typedef HANDLE HINSTANCE;
@@ -30,6 +32,7 @@ final class WindowsFfi
         typedef const char *LPCSTR;
         typedef LRESULT (*WNDPROC)(HWND,UINT,WPARAM,LPARAM);
         typedef int BOOL;
+        typedef int WINBOOL;
         typedef unsigned short WORD;
         typedef WORD ATOM;
         typedef struct tagWNDCLASSEXA {
@@ -119,6 +122,27 @@ final class WindowsFfi
         BOOL DestroyWindow(
           HWND hWnd
         );
+        typedef struct tagRECT {
+         LONG left;
+         LONG top;
+         LONG right;
+         LONG bottom;
+        } RECT, *PRECT, *NPRECT, *LPRECT;
+        typedef struct {
+          HDC hdc;
+          WINBOOL fErase;
+          RECT rcPaint;
+          WINBOOL fRestore;
+          WINBOOL fIncUpdate;
+          unsigned char rgbReserved[32];
+        } PAINTSTRUCT,*PPAINTSTRUCT,*NPPAINTSTRUCT,*LPPAINTSTRUCT;
+        HDC BeginPaint(HWND hWnd,LPPAINTSTRUCT lpPaint);
+        WINBOOL EndPaint(HWND hWnd,const PAINTSTRUCT *lpPaint);
+        BOOL InvalidateRect(
+          HWND       hWnd,
+          const RECT *lpRect,
+          BOOL       bErase
+        );
         CDEF, "User32.dll");
         $this->shell32 = FFI::cdef(<<<CDEF
         typedef int64_t LONG_PTR;
@@ -130,6 +154,10 @@ final class WindowsFfi
           BOOL fAccept
         );
         CDEF, "Shell32.dll");
+        $this->kernel32 = FFI::cdef(<<<CDEF
+        typedef unsigned long DWORD;
+        DWORD GetLastError();
+        CDEF, "Kernel32.dll");
     }
 
 
