@@ -21,7 +21,7 @@ final class WindowsFfi
         typedef void *PVOID;
         typedef LONG_PTR HANDLE;
         typedef HANDLE HWND;
-        typedef HANDLE HDC;
+        typedef void *HDC;
         typedef uint64_t UINT_PTR;
         typedef UINT_PTR WPARAM;
         typedef HANDLE HINSTANCE;
